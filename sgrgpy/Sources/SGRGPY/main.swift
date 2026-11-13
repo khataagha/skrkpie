@@ -16,8 +16,7 @@ struct Profile: Identifiable, Codable, Hashable {
 }
 
 final class SettingsStore: ObservableObject {
-    @Published var selectedAppearance: String = "Dark" {
-        didSet { persist() }
+    @Published var selectedAppearance: String = "Dark" {\n        didSet { persist() }
     }
     @Published var pullDestination: String = NSHomeDirectory() + "/Downloads" {
         didSet { persist() }
@@ -129,9 +128,8 @@ final class SettingsStore: ObservableObject {
     }
 
     func saveCurrentAsProfile() {
-        let name = "Preset \((profiles.count + 1))"
         let profile = Profile(
-            name: name,
+            name: "Preset \((profiles.count + 1))",
             resolution: resolution,
             bitrate: bitrate,
             fps: fps,
@@ -272,8 +270,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .frame(maxWidth: 420,
-                           alignment: .leading)
+                    .frame(maxWidth: 420, alignment: .leading)
                 }
                 .padding(.horizontal, 18)
                 .padding(.bottom, 12)
@@ -512,8 +509,7 @@ struct ContentView: View {
         which.executableURL = URL(fileURLWithPath: "/bin/bash")
         which.arguments = ["-lc", "which scrcpy || true"]
         let pipe = Pipe(); which.standardOutput = pipe
-        do { try which.run(); which.waitUntilExit() }
-        catch { return nil }
+        do { try which.run(); which.waitUntilExit() } catch { return nil }
         let out = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
         if let path = out, !path.isEmpty, FileManager.default.isExecutableFile(atPath: path) {
             return URL(fileURLWithPath: path)
@@ -547,8 +543,6 @@ private struct NumberSlider: View {
     let step: Int
     let suffix: String
 
-    @State private var typedValue: String = ""
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -562,7 +556,6 @@ private struct NumberSlider: View {
                         if let parsed = Int(newValue) {
                             value = min(max(parsed, range.lowerBound), range.upperBound)
                         }
-                        typedValue = String(value)
                     }
                 ))
                 .frame(width: 94)
@@ -580,7 +573,6 @@ private struct NumberSlider: View {
             ), in: Double(range.lowerBound)...Double(range.upperBound), step: Double(step))
             .accentColor(AppPalette.accent)
         }
-        .onAppear { typedValue = String(value) }
     }
 }
 
@@ -712,7 +704,7 @@ struct PreferencesView: View {
                 }
 
                 Section("Profiles") {
-                    List {
+                    VStack(alignment: .leading, spacing: 10) {
                         ForEach(settings.profiles) { profile in
                             HStack {
                                 Text(profile.name)
@@ -725,11 +717,9 @@ struct PreferencesView: View {
                                 }
                             }
                         }
-                    }
-                    .frame(minHeight: 120)
-
-                    Button("Save current as preset") {
-                        settings.saveCurrentAsProfile()
+                        Button("Save current as preset") {
+                            settings.saveCurrentAsProfile()
+                        }
                     }
                 }
 
